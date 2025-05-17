@@ -11,12 +11,13 @@ MoneySplit money_splt_in_two_halfs(char *money)
 {
     MoneySplit data;
     char *separator = strchr(money, ',');
+    printf("Separator: %s\n", separator);
 
     if (separator != NULL)
     {
-        int position = separator - money;
-        strncpy(data.l_half, money, position);
-        data.l_half[position] = '\0';
+        int char_amount = separator - money;
+        strncpy(data.l_half, money, char_amount);
+        data.l_half[char_amount] = '\0';
         strcpy(data.r_half, separator + 1);
     }
     else
@@ -30,10 +31,9 @@ MoneySplit money_splt_in_two_halfs(char *money)
 
 int main()
 {
-    MoneySplit split =  money_splt_in_two_halfs("543217,09");
-
+    MoneySplit split =  money_splt_in_two_halfs("543217");
     printf("Antes da virgula: %s\n", split.l_half);
-    printf("Depois da vírgula: %s\n", split.r_half);
+    printf("Depois da virgula: %s\n", split.r_half);
     return 0;
 }
 
