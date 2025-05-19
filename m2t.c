@@ -36,7 +36,7 @@ MoneySplit money_splt_in_two_halfs(char *money) // recebe o valor "5432178,99"
     return money_split;
 }
 
-void split_in_groups_of_three(char *data)
+SplitInGroupsOfThree split_in_groups_of_three(char *data)
 {
     SplitInGroupsOfThree sigot;
     sigot.len = strlen(data); // Descobre quantos caracteres tem na string
@@ -57,18 +57,18 @@ void split_in_groups_of_three(char *data)
         sigot.i -= 3;        // Anda 3 casas para a esquerda
     }
 
-    // Agora os grupos estão de trás pra frente, vamos imprimir na ordem certa
-    printf("Grupos de 3 digitos:\n");
-    for (int j = sigot.group_index - 1; j >= 0; j--)
-    {
-        printf("[%s] ", sigot.groups[j]);
-    }
-    printf("\n");
+    return sigot;
 }
 
 int main()
 {
     MoneySplit split = money_splt_in_two_halfs("5432178,99");
-    split_in_groups_of_three(split.l_half);
+    SplitInGroupsOfThree sigot = split_in_groups_of_three(split.l_half);
+    printf("Grupos de 3 digitos:\n");
+    for(int i = sigot.group_index - 1; i >=0; i--)
+    {
+        printf("[%s] ", sigot.groups[i]);
+    }
+    printf("\n");
     return 0;
 }
