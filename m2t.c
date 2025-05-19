@@ -15,22 +15,40 @@ typedef struct
     int i;
 } SplitInGroupsOfThree;
 
-MoneySplit money_splt_in_two_halfs(char *value) // recebe o valor "5432178,99"
+typedef struct
+{
+    const char *singular;
+    const char *plural;
+    char *fator;
+    char *out;
+} MonetaryClasses;
+
+MonetaryClasses mcs[] = {
+    {"quatrilhão", "quatrilhões", "1000000000000000"},
+    {"trilhão", "trilhões", "1000000000000"},
+    {"bilhão", "bilhões", "1000000000"},
+    {"milhão", "milhões", "1000000"},
+    {"mil", "mil", "1000"},
+    {"real", "reais", "1"}};
+
+const int CLASSES_COUNT = sizeof(mcs) / sizeof(mcs[0]);
+
+MoneySplit money_splt_in_two_halfs(char *value)
 {
     MoneySplit money_split;
-    char *separator = strchr(value, ','); // identifica o separador retornando ",99"
+    char *separator = strchr(value, ',');
 
     if (separator != NULL)
     {
-        int char_amount = separator - value;             // retorna a quantidade de caracteres que vem antes da virgula/ponto
-        strncpy(money_split.l_half, value, char_amount); // copia para dentro de "l_half" o valor "5432178" que vem antes da virgula
-        money_split.l_half[char_amount] = '\0';          // adiciona ao final do array de strings o caracter '\0' para indicar o fim da string
-        strcpy(money_split.r_half, separator + 1);       // copia para dentro de "r_half" o valor "99" que vem depois da virgula
+        int char_amount = separator - value;
+        strncpy(money_split.l_half, value, char_amount);
+        money_split.l_half[char_amount] = '\0';
+        strcpy(money_split.r_half, separator + 1);
     }
     else
     {
-        strcpy(money_split.l_half, value); // Se não tiver separador copia o valor de "value" para dentro de "l_half"
-        strcpy(money_split.r_half, "00");  // Se não tiver separador adiciona o valor "00" depois da virgula
+        strcpy(money_split.l_half, value);
+        strcpy(money_split.r_half, "00");
     }
 
     return money_split;
@@ -39,36 +57,55 @@ MoneySplit money_splt_in_two_halfs(char *value) // recebe o valor "5432178,99"
 SplitInGroupsOfThree split_in_groups_of_three(char *value)
 {
     SplitInGroupsOfThree sigot;
-    sigot.len = strlen(value); // Descobre quantos caracteres tem na string
-    sigot.group_index = 0;    // Contador de quantos grupos já salvei
-    sigot.i = sigot.len;      // Começamos do fim da string
+    sigot.len = strlen(value);
+    sigot.group_index = 0;
+    sigot.i = sigot.len;
 
     while (sigot.i > 0)
     {
-        int start = sigot.i - 3; // Marca o início do grupo (3 posições antes) 5 432 178
+        int start = sigot.i - 3;
         if (start < 0)
-            start = 0; // Se passar do início da string, ajusta
+            start = 0;
 
-        int size = sigot.i - start;                                   // Quantos caracteres o grupo vai ter (1, 2 ou 3)
-        strncpy(sigot.groups[sigot.group_index], &value[start], size); // Copia o trecho do grupo
-        sigot.groups[sigot.group_index][size] = '\0';                 // Termina a string com \0
+        int size = sigot.i - start;
+        strncpy(sigot.groups[sigot.group_index], &value[start], size);
+        sigot.groups[sigot.group_index][size] = '\0';
 
-        sigot.group_index++; // Próximo grupo
-        sigot.i -= 3;        // Anda 3 casas para a esquerda
+        sigot.group_index++;
+        sigot.i -= 3;
     }
 
     return sigot;
 }
 
+void identify_value_class(SplitInGroupsOfThree sigot)
+{
+    for (int i = sigot.group_index - 1; i >= 0; i--)
+    {
+        int class_index = sigot.group_index - 1 - i;
+
+        if (class_index < CLASSES_COUNT)
+        {
+            printf("A classe do grupo %s é de %s\n", sigot.groups[i], mcs[class_index].singular);
+        }
+        else
+        {
+            printf("Grupo %s não tem classe definida\n", sigot.groups[i]);
+        }
+    }
+}
+
 int main()
 {
     MoneySplit split = money_splt_in_two_halfs("5432178,99");
+
     SplitInGroupsOfThree sigot = split_in_groups_of_three(split.l_half);
-    printf("Grupos de 3 digitos:\n");
-    for(int i = sigot.group_index - 1; i >=0; i--)
-    {
-        printf("[%s] ", sigot.groups[i]);
-    }
-    printf("\n");
+
+    printf("Total de classes monetárias: %d\n", CLASSES_COUNT);
+    printf("group_index: %d\n", sigot.group_index);
+
+    if (sigot.len > 0)
+        identify_value_class(sigot);
+
     return 0;
 }
