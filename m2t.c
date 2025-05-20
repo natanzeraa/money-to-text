@@ -152,20 +152,23 @@ SplitInGroupsOfThree split_in_groups_of_three(char *value)
     return sigot;
 }
 
-void translate_values_to_txt(int v_index, int c_index, char *value, const char *m_class)
+void translate_value_to_txt(int v_index, int c_index, char *value, const char *m_class)
 {
-    char *out;
-    const char *v_in = value;
-    const char *c_in = m_class;
+    char out[512] = "";
 
-    if (v_in)
+    if (value)
     {
-        printf("%s %s ", v_in, c_in);
+        strcat(out, value);
+        strcat(out, " ");
+
+        strcat(out, m_class);
+        strcat(out, " ");
     }
     else
     {
         printf("Valor não encontrado\n");
     }
+    printf("%s", out);
 }
 
 void identify_value_class(SplitInGroupsOfThree sigot)
@@ -183,7 +186,7 @@ void identify_value_class(SplitInGroupsOfThree sigot)
             if (mlns[j].class_number == m_class_pos)
             {
                 const char *m_class = (i_groups == 1) ? mlns[j].singular : mlns[j].plural;
-                translate_values_to_txt(i, j, sigot.groups[i], m_class);
+                translate_value_to_txt(i, j, sigot.groups[i], m_class);
                 break;
             }
         }
