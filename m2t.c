@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 typedef struct
 {
@@ -17,22 +18,94 @@ typedef struct
 
 typedef struct
 {
+    int num;
+    char *n_txt;
+} ZeroToNine;
+
+ZeroToNine ztn[] = {
+    {0, "zero"},
+    {1, "um"},
+    {2, "dois"},
+    {3, "trës"},
+    {4, "quatro"},
+    {5, "cinco"},
+    {6, "seis"},
+    {7, "sete"},
+    {8, "oito"},
+    {9, "nove"},
+};
+
+typedef struct
+{
+    int num;
+    char *n_txt;
+} ElevenToNineTeen;
+
+ElevenToNineTeen etn[] = {
+    {11, "onze"},
+    {12, "doze"},
+    {13, "treze"},
+    {14, "quatorze"},
+    {15, "quinze"},
+    {16, "dezesseis"},
+    {17, "dezessete"},
+    {18, "dezoito"},
+    {19, "dezenove"},
+};
+
+typedef struct
+{
+    int num;
+    char *n_txt;
+} Tens;
+
+Tens tns[] = {
+    {10, "dez"},
+    {20, "vinte"},
+    {30, "trinta"},
+    {40, "quarenta"},
+    {50, "cinquenta"},
+    {60, "sessenta"},
+    {70, "setenta"},
+    {80, "oitenta"},
+    {90, "noventa"},
+};
+
+typedef struct
+{
+    int num;
+    char *n_txt;
+} Hundreds;
+
+Hundreds hds[] = {
+    {100, "cem"},
+    {200, "duzentos"},
+    {300, "trezentos"},
+    {400, "quatrocentos"},
+    {500, "quinhentos"},
+    {600, "seiscentos"},
+    {700, "setecentos"},
+    {800, "oitocentos"},
+    {900, "novecentos"},
+};
+
+typedef struct
+{
     int class_number;
     const char *singular;
     const char *plural;
-    char *fator;
     char *out;
-} MonetaryClasses;
+} Milions;
 
-MonetaryClasses mcs[] = {
-    {6, "quatrilhão", "quatrilhões", "1000000000000000"},
-    {5, "trilhão", "trilhões", "1000000000000"},
-    {4, "bilhão", "bilhões", "1000000000"},
-    {3, "milhão", "milhões", "1000000"},
-    {2, "mil", "mil", "1000"},
-    {1, "real", "reais", "1"}};
+Milions mlns[] = {
+    {6, "quatrilhão", "quatrilhões"},
+    {5, "trilhão", "trilhões"},
+    {4, "bilhão", "bilhões"},
+    {3, "milhão", "milhões"},
+    {2, "mil", "mil"},
+    {1, "real", "reais"}};
 
-const int CLASSES_COUNT = sizeof(mcs) / sizeof(mcs[0]);
+const int CLASSES_COUNT = sizeof(mlns) / sizeof(mlns[0]);
 
 MoneySplit money_splt_in_two_halfs(char *value)
 {
@@ -79,24 +152,44 @@ SplitInGroupsOfThree split_in_groups_of_three(char *value)
     return sigot;
 }
 
+void translate_values_to_txt(int v_index, int c_index, char *value, const char *m_class)
+{
+    char *out;
+    const char *v_in = value;
+    const char *c_in = m_class;
+
+    if (v_in)
+    {
+        printf("%s %s ", v_in, c_in);
+    }
+    else
+    {
+        printf("Valor não encontrado\n");
+    }
+}
+
 void identify_value_class(SplitInGroupsOfThree sigot)
 {
-    // [005] [432] [178]  → (5 milhões, 432 mil, 178 reais)
-
     for (int i = sigot.group_index - 1; i >= 0; i--)
     {
         int m_class_pos = i + 1;
-        printf("The value of group %d is: %s\n", m_class_pos, sigot.groups[i]);
+        int i_groups = atoi(sigot.groups[i]);
+
+        if (i_groups == 0)
+            continue;
 
         for (int j = 0; j < CLASSES_COUNT; j++)
         {
-            if (mcs[j].class_number == m_class_pos)
+            if (mlns[j].class_number == m_class_pos)
             {
-                printf("The class of group %s is: %s\n\n", sigot.groups[i], mcs[j].singular);
+                const char *m_class = (i_groups == 1) ? mlns[j].singular : mlns[j].plural;
+                translate_values_to_txt(i, j, sigot.groups[i], m_class);
                 break;
             }
         }
     }
+
+    printf("\n");
 }
 
 int main()
@@ -105,12 +198,8 @@ int main()
 
     SplitInGroupsOfThree sigot = split_in_groups_of_three(split.l_half);
 
-    // printf("Total monetary classes: %d\n", CLASSES_COUNT);
-    printf("group_index: %d\n", sigot.group_index);
-
     if (sigot.len > 0)
         identify_value_class(sigot);
 
     return 0;
 }
-
