@@ -85,12 +85,12 @@ void identify_value_class(SplitInGroupsOfThree sigot)
 
     for (int i = sigot.group_index - 1; i >= 0; i--)
     {
-        int class_pos = i + 1;
-        printf("The value of group %d is: %s\n", class_pos, sigot.groups[i]);
+        int m_class_pos = i + 1;
+        printf("The value of group %d is: %s\n", m_class_pos, sigot.groups[i]);
 
         for (int j = 0; j < CLASSES_COUNT; j++)
         {
-            if (mcs[j].class_number == class_pos)
+            if (mcs[j].class_number == m_class_pos)
             {
                 printf("The class of group %s is: %s\n\n", sigot.groups[i], mcs[j].singular);
                 break;
@@ -113,3 +113,4 @@ int main()
 
     return 0;
 }
+
