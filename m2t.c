@@ -17,6 +17,7 @@ typedef struct
 
 typedef struct
 {
+    int class_number;
     const char *singular;
     const char *plural;
     char *fator;
@@ -24,12 +25,12 @@ typedef struct
 } MonetaryClasses;
 
 MonetaryClasses mcs[] = {
-    {"quatrilhão", "quatrilhões", "1000000000000000"},
-    {"trilhão", "trilhões", "1000000000000"},
-    {"bilhão", "bilhões", "1000000000"},
-    {"milhão", "milhões", "1000000"},
-    {"mil", "mil", "1000"},
-    {"real", "reais", "1"}};
+    {6, "quatrilhão", "quatrilhões", "1000000000000000"},
+    {5, "trilhão", "trilhões", "1000000000000"},
+    {4, "bilhão", "bilhões", "1000000000"},
+    {3, "milhão", "milhões", "1000000"},
+    {2, "mil", "mil", "1000"},
+    {1, "real", "reais", "1"}};
 
 const int CLASSES_COUNT = sizeof(mcs) / sizeof(mcs[0]);
 
@@ -80,17 +81,20 @@ SplitInGroupsOfThree split_in_groups_of_three(char *value)
 
 void identify_value_class(SplitInGroupsOfThree sigot)
 {
+    // [005] [432] [178]  → (5 milhões, 432 mil, 178 reais)
+
     for (int i = sigot.group_index - 1; i >= 0; i--)
     {
-        int class_index = sigot.group_index - 1 - i;
+        int class_pos = i + 1;
+        printf("The value of group %d is: %s\n", class_pos, sigot.groups[i]);
 
-        if (class_index < CLASSES_COUNT)
+        for (int j = 0; j < CLASSES_COUNT; j++)
         {
-            printf("A classe do grupo %s é de %s\n", sigot.groups[i], mcs[class_index].singular);
-        }
-        else
-        {
-            printf("Grupo %s não tem classe definida\n", sigot.groups[i]);
+            if (mcs[j].class_number == class_pos)
+            {
+                printf("The class of group %s is: %s\n\n", sigot.groups[i], mcs[j].singular);
+                break;
+            }
         }
     }
 }
@@ -101,7 +105,7 @@ int main()
 
     SplitInGroupsOfThree sigot = split_in_groups_of_three(split.l_half);
 
-    printf("Total de classes monetárias: %d\n", CLASSES_COUNT);
+    // printf("Total monetary classes: %d\n", CLASSES_COUNT);
     printf("group_index: %d\n", sigot.group_index);
 
     if (sigot.len > 0)
