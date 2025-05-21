@@ -1,1 +1,4 @@
 *.exe
+test_runner
+.vscode/settings.json
+.vscode/tasks.json
