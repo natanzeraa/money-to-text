@@ -1,26 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-typedef struct
-{
-    char l_half[50];
-    char r_half[50];
-} MoneySplit;
-
-typedef struct
-{
-    int len;
-    char groups[10][4];
-    int group_index;
-    int i;
-} SplitInGroupsOfThree;
-
-typedef struct
-{
-    int num;
-    char *n_txt;
-} ZeroToNine;
+#include "../src/m2t.h"
 
 ZeroToNine ztn[] = {
     {0, "zero"},
@@ -35,12 +16,6 @@ ZeroToNine ztn[] = {
     {9, "nove"},
 };
 
-typedef struct
-{
-    int num;
-    char *n_txt;
-} ElevenToNineTeen;
-
 ElevenToNineTeen etn[] = {
     {11, "onze"},
     {12, "doze"},
@@ -52,12 +27,6 @@ ElevenToNineTeen etn[] = {
     {18, "dezoito"},
     {19, "dezenove"},
 };
-
-typedef struct
-{
-    int num;
-    char *n_txt;
-} Tens;
 
 Tens tns[] = {
     {10, "dez"},
@@ -71,12 +40,6 @@ Tens tns[] = {
     {90, "noventa"},
 };
 
-typedef struct
-{
-    int num;
-    char *n_txt;
-} Hundreds;
-
 Hundreds hds[] = {
     {100, "cem"},
     {200, "duzentos"},
@@ -88,14 +51,6 @@ Hundreds hds[] = {
     {800, "oitocentos"},
     {900, "novecentos"},
 };
-
-typedef struct
-{
-    int class_number;
-    const char *singular;
-    const char *plural;
-    char *out;
-} Milions;
 
 Milions mlns[] = {
     {6, "quatrilhão", "quatrilhões"},
@@ -171,7 +126,8 @@ void translate_value_to_txt(int v_index, int c_index, char *value, const char *m
         if (l_val % 100 == 0 && hundreds == 1)
         {
             strcat(out, "cem");
-        } else if (l_val % 100 != 0 && hundreds == 1)
+        }
+        else if (l_val % 100 != 0 && hundreds == 1)
         {
             strcat(out, "cento");
         }
@@ -240,14 +196,14 @@ void identify_value_class(SplitInGroupsOfThree sigot)
     printf("\n");
 }
 
-int main()
-{
-    MoneySplit split = money_splt_in_two_halfs("10,01");
+// int main()
+// {
+//     MoneySplit split = money_splt_in_two_halfs("10,01");
 
-    if (atoi(split.l_half) == 0 && atoi(split.r_half) == 0)
-        printf("Nenhum valor foi fornecido\n");
+//     if (atoi(split.l_half) == 0 && atoi(split.r_half) == 0)
+//         printf("Nenhum valor foi fornecido\n");
 
-    SplitInGroupsOfThree sigot = split_in_groups_of_three(split.l_half);
-    identify_value_class(sigot);
-    return 0;
-}
+//     SplitInGroupsOfThree sigot = split_in_groups_of_three(split.l_half);
+//     identify_value_class(sigot);
+//     return 0;
+// }
