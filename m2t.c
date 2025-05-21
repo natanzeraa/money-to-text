@@ -155,19 +155,69 @@ SplitInGroupsOfThree split_in_groups_of_three(char *value)
 void translate_value_to_txt(int v_index, int c_index, char *value, const char *m_class)
 {
     char out[512] = "";
+    int l_val = atoi(value);
 
-    if (value)
+    if (l_val == 0)
     {
-        strcat(out, value);
-        strcat(out, " ");
+        return; // ignora grupos com 000
+    }
 
-        strcat(out, m_class);
-        strcat(out, " ");
+    int hundreds = l_val / 100;
+    int tens = (l_val % 100) / 10;
+    int unities = l_val % 10;
+
+    // Centena
+    if (hundreds > 0)
+    {
+        if (l_val % 100 == 0 && hundreds == 1)
+        {
+            strcat(out, "cem");
+        } else if (l_val % 100 != 0 && hundreds == 1)
+        {
+            strcat(out, "cento");
+        }
+        else
+        {
+            strcat(out, hds[hundreds - 1].n_txt);
+        }
+    }
+
+    // Espaço e "e"
+    if (hundreds > 0 && (tens > 0 || unities > 0))
+    {
+        strcat(out, " e ");
+    }
+
+    // Dezena + Unidade
+    if (tens == 1 && unities > 0)
+    {
+        // Exceções 11–19
+        int teen = l_val % 100;
+        strcat(out, etn[teen - 11].n_txt);
     }
     else
     {
-        printf("Valor não encontrado\n");
+        if (tens > 0)
+        {
+            strcat(out, tns[tens - 1].n_txt);
+        }
+
+        if (tens > 0 && unities > 0)
+        {
+            strcat(out, " e ");
+        }
+
+        if (unities > 0 && !(tens == 1))
+        {
+            strcat(out, ztn[unities].n_txt);
+        }
     }
+
+    // Espaço + classe
+    strcat(out, " ");
+    strcat(out, m_class);
+    strcat(out, " ");
+
     printf("%s", out);
 }
 
@@ -197,7 +247,7 @@ void identify_value_class(SplitInGroupsOfThree sigot)
 
 int main()
 {
-    MoneySplit split = money_splt_in_two_halfs("5432178,99");
+    MoneySplit split = money_splt_in_two_halfs("1099,99");
 
     SplitInGroupsOfThree sigot = split_in_groups_of_three(split.l_half);
 
