@@ -159,14 +159,13 @@ void translate_value_to_txt(int v_index, int c_index, char *value, const char *m
 
     if (l_val == 0)
     {
-        return; // ignora grupos com 000
+        return;
     }
 
     int hundreds = l_val / 100;
     int tens = (l_val % 100) / 10;
     int unities = l_val % 10;
 
-    // Centena
     if (hundreds > 0)
     {
         if (l_val % 100 == 0 && hundreds == 1)
@@ -182,16 +181,13 @@ void translate_value_to_txt(int v_index, int c_index, char *value, const char *m
         }
     }
 
-    // Espaço e "e"
     if (hundreds > 0 && (tens > 0 || unities > 0))
     {
         strcat(out, " e ");
     }
 
-    // Dezena + Unidade
     if (tens == 1 && unities > 0)
     {
-        // Exceções 11–19
         int teen = l_val % 100;
         strcat(out, etn[teen - 11].n_txt);
     }
@@ -213,7 +209,6 @@ void translate_value_to_txt(int v_index, int c_index, char *value, const char *m
         }
     }
 
-    // Espaço + classe
     strcat(out, " ");
     strcat(out, m_class);
     strcat(out, " ");
