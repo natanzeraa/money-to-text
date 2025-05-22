@@ -85,49 +85,51 @@ MoneySplit money_splt_in_two_halfs(char *value)
 
 SplitInGroupsOfThree split_in_groups_of_three(char *value)
 {
-    SplitInGroupsOfThree sigot;
-    sigot.len = strlen(value);
-    sigot.group_index = 0;
-    sigot.i = sigot.len;
+    SplitInGroupsOfThree split_groups;
+    split_groups.len = strlen(value);
+    split_groups.group_index = 0;
+    split_groups.i = split_groups.len;
 
-    while (sigot.i > 0)
+    while (split_groups.i > 0)
     {
-        int start = sigot.i - 3;
+        int start = split_groups.i - 3;
         if (start < 0)
             start = 0;
 
-        int size = sigot.i - start;
-        strncpy(sigot.groups[sigot.group_index], &value[start], size);
-        sigot.groups[sigot.group_index][size] = '\0';
+        int size = split_groups.i - start;
+        strncpy(split_groups.groups[split_groups.group_index], &value[start], size);
+        split_groups.groups[split_groups.group_index][size] = '\0';
 
-        sigot.group_index++;
-        sigot.i -= 3;
+        split_groups.group_index++;
+        split_groups.i -= 3;
     }
 
-    return sigot;
+    return split_groups;
 }
 
-void translate_value_to_txt(int v_index, int c_index, char *value, const char *m_class)
+char *translate_value_to_txt(const ValueClassResult *value_class)
 {
-    char out[512] = "";
-    int l_val = atoi(value);
+    char *out = malloc(512);
+    out[0] = '\0';
 
-    if (l_val == 0)
+    int left_value = atoi(value_class->group_value_str);
+
+    if (left_value == 0)
     {
-        return;
+        return "";
     }
 
-    int hundreds = l_val / 100;
-    int tens = (l_val % 100) / 10;
-    int unities = l_val % 10;
+    int hundreds = left_value / 100;
+    int tens = (left_value % 100) / 10;
+    int unities = left_value % 10;
 
     if (hundreds > 0)
     {
-        if (l_val % 100 == 0 && hundreds == 1)
+        if (left_value % 100 == 0 && hundreds == 1)
         {
             strcat(out, "cem");
         }
-        else if (l_val % 100 != 0 && hundreds == 1)
+        else if (left_value % 100 != 0 && hundreds == 1)
         {
             strcat(out, "cento");
         }
@@ -144,7 +146,7 @@ void translate_value_to_txt(int v_index, int c_index, char *value, const char *m
 
     if (tens == 1 && unities > 0)
     {
-        int teen = l_val % 100;
+        int teen = left_value % 100;
         strcat(out, etn[teen - 11].n_txt);
     }
     else
@@ -166,14 +168,29 @@ void translate_value_to_txt(int v_index, int c_index, char *value, const char *m
     }
 
     strcat(out, " ");
-    strcat(out, m_class);
+    strcat(out, value_class->class_name);
     strcat(out, " ");
 
-    printf("%s", out);
+    return out;
 }
 
-void identify_value_class(SplitInGroupsOfThree sigot)
+const Milions *find_class_by_number(int class_number)
 {
+    for (int j = 0; j < CLASSES_COUNT; j++)
+    {
+        if (mlns[j].class_number == class_number)
+        {
+            return &mlns[j];
+        }
+    }
+    return NULL;
+}
+
+ValueClassResult *identify_value_class(SplitInGroupsOfThree sigot, int *count)
+{
+    ValueClassResult *results = malloc(sizeof(ValueClassResult) * sigot.group_index);
+    int result_index = 0;
+
     for (int i = sigot.group_index - 1; i >= 0; i--)
     {
         int m_class_pos = i + 1;
@@ -187,11 +204,20 @@ void identify_value_class(SplitInGroupsOfThree sigot)
             if (mlns[j].class_number == m_class_pos)
             {
                 const char *m_class = (i_groups == 1) ? mlns[j].singular : mlns[j].plural;
-                translate_value_to_txt(i, j, sigot.groups[i], m_class);
+
+                results[result_index].group_index = i;
+
+                results[result_index].group_value_str = malloc(strlen(sigot.groups[i]) + 1);
+                strcpy(results[result_index].group_value_str, sigot.groups[i]);
+
+                results[result_index].class_name = m_class;
+                result_index++;
                 break;
             }
         }
     }
 
-    printf("\n");
+    *count = result_index;
+    return results;
 }
+
