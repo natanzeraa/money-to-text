@@ -1,5 +1,5 @@
 #include "../unity/unity.h"
-#include "../src/m2t.h"
+#include "../include/m2t.h"
 
 void setUp(void) {}
 void tearDown(void) {}
