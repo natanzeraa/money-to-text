@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../src/m2t.h"
+#include "../include/m2t.h"
 
 ZeroToNine ztn[] = {
     {0, "zero"},
