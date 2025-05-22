@@ -99,7 +99,3 @@ money-to-text/
 ├── test_runner.exe     # gerado ao compilar os testes
 └── README.md
 ```
-
----
-
-Se quiser posso gerar esse arquivo direto pra você salvar como `.md`. Quer?
