@@ -1,91 +1,105 @@
-# Money To Text
+# 💸 Money To Text
 
-> Repositório dedicado a transformar valor monetário em texto por extenso
+Projeto em C para converter valores monetários em extenso. Inclui testes automatizados usando a Unity Test Framework.
 
-### 💡 Objetivo:
 
-- Converter, por exemplo, R$ 1.234,56 → "mil duzentos e trinta e quatro reais e cinquenta e seis centavos"
+### 🧪 Como rodar os testes com Unity
 
-### 🧠 Lógica Geral do Fluxo:
+#### 1. Compile os testes com o framework Unity:
 
-#### 1. Separar parte inteira e centavos
-Separe o valor antes e depois da vírgula (ou ponto decimal, dependendo do formato).
+```bash
+gcc -Iinclude -Isrc -Iunity test/test_m2t.c src/m2t.c unity/unity.c -o test_runner
+````
 
-- Exemplo: 1234,56
+#### 2. Execute os testes:
 
-- Parte inteira = 1234
+**Linux/WSL:**
 
-- Centavos = 56
+```bash
+./test_runner
+```
 
-#### 2. Decompor os números em grupos de três dígitos (classes)
-- A parte inteira deve ser agrupada da direita para a esquerda em trios:
+**Windows:**
 
-- 123456789 → 123 (milhão), 456 (mil), 789 (unidade)
+```bash
+test_runner.exe
+```
 
-- Cada grupo tem um nome: milhar, milhão, bilhão, etc.
+#### ✅ Exemplo de saída esperada:
 
-#### 3. Converter cada grupo para texto
-- Para cada grupo de três dígitos:
+```
+test/test_m2t.c:69:test_money_split_should_split_correctly:PASS
+test/test_m2t.c:70:test_money_split_without_comma_should_default_to_00:PASS
+test/test_m2t.c:71:test_split_in_groups_of_three_should_split_7_digits:PASS
+test/test_m2t.c:72:test_split_in_groups_of_three_should_split_4_digits:PASS
 
-- Analise centena, dezena e unidade.
+-----------------------
+4 Tests 0 Failures 0 Ignored
+OK
+```
 
-- 123 → "cento e vinte e três"
+---
 
-- **Regras especiais**:
+### 🚀 Como rodar o programa principal
 
-    - 100 é "cem", mas 101 é "cento e um"
+#### 1. Compile o programa com `main.c`:
 
-    - 11 a 19 têm nomes próprios: onze, doze, treze, etc.
+```bash
+gcc -Iinclude src/main.c src/m2t.c -o program.exe
+```
 
-    - Combine com a classe:
+#### 2. Execute o programa:
 
-    - 123 mil → "cento e vinte e três mil"
+**Linux/WSL:**
 
-    - 456000000 → "quatrocentos e cinquenta e seis milhões"
+```bash
+./program.exe
+```
 
-#### 4. Tratar singular e plural
-- 1 real, 2 reais
+**Windows:**
 
-- 1 centavo, 2 centavos
+```bash
+program.exe
+```
 
-- 1 milhão, 2 milhões
+#### 🎯 Exemplo de saída:
 
-- Isso exige verificação da quantidade em cada classe
+```
+quarenta e quatro mil duzentos e quarenta reais 
+```
 
-#### 5. Inserir conectivos ("e") corretamente
-- O “e” é necessário para fluidez da linguagem:
+---
 
-- Entre dezenas e unidades: vinte **e** três
+### ⚠️ Observações importantes
 
-- Entre centenas e dezenas/unidades: cento **e** cinco
+* O programa principal (`main.c`) **não deve ser compilado junto com os testes**, pois **C não permite múltiplas funções `main()` em um mesmo binário**.
+* Sempre compile e execute os testes separadamente do programa principal.
 
-- Entre classes: mil **e** duzentos reais
+---
 
-- Mas não é usado:
+### 📁 Estrutura sugerida do projeto
 
-    - Entre classe e "mil": mil duzentos reais (sem vírgula ou "e")
+```
+money-to-text/
+│
+├── src/
+│   ├── m2t.c
+│   └── main.c
+│
+├── include/
+│   └── m2t.h
+│
+├── test/
+│   └── test_m2t.c
+│
+├── unity/
+│   └── unity.c / unity.h
+│
+├── program.exe         # gerado ao compilar main
+├── test_runner.exe     # gerado ao compilar os testes
+└── README.md
+```
 
-#### 6. Adicionar unidade monetária
-- Após a parte inteira, adicione "real/reais"
+---
 
-- Após os centavos, adicione "centavo/centavos"
-
-- Use "e" para ligar:
-
-- dois mil reais **e** trinta centavos
-
-### 📌 Exemplo completo: 
-- R$ 123456789,01
-
-Quebra:
-
-- Centena de milhão: 123 → "cento e vinte e três milhões"
-
-- Milhar: 456 → "quatrocentos e cinquenta e seis mil"
-
-- Unidade: 789 → "setecentos e oitenta e nove"
-
-- Centavos: 01 → "um centavo"
-
-#### Resultado final:
-> "cento e vinte e três milhões quatrocentos e cinquenta e seis mil setecentos e oitenta e nove reais e um centavo"
+Se quiser posso gerar esse arquivo direto pra você salvar como `.md`. Quer?
