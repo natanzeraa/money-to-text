@@ -52,15 +52,17 @@ Hundreds hds[] = {
     {900, "novecentos"},
 };
 
-Milions mlns[] = {
+MonetaryClass mc[] = {
     {6, "quatrilhão", "quatrilhões"},
     {5, "trilhão", "trilhões"},
     {4, "bilhão", "bilhões"},
     {3, "milhão", "milhões"},
     {2, "mil", "mil"},
-    {1, "real", "reais"}};
+    {1, "real", "reais"},
+    {0, "centavo", "centavos"},
+};
 
-const int CLASSES_COUNT = sizeof(mlns) / sizeof(mlns[0]);
+const int CLASSES_COUNT = sizeof(mc) / sizeof(mc[0]);
 
 MoneySplit money_splt_in_two_halfs(char *value)
 {
@@ -70,14 +72,14 @@ MoneySplit money_splt_in_two_halfs(char *value)
     if (separator != NULL)
     {
         int char_amount = separator - value;
-        strncpy(money_split.l_half, value, char_amount);
-        money_split.l_half[char_amount] = '\0';
-        strcpy(money_split.r_half, separator + 1);
+        strncpy(money_split.left_value, value, char_amount);
+        money_split.left_value[char_amount] = '\0';
+        strcpy(money_split.right_value, separator + 1);
     }
     else
     {
-        strcpy(money_split.l_half, value);
-        strcpy(money_split.r_half, "00");
+        strcpy(money_split.left_value, value);
+        strcpy(money_split.right_value, "00");
     }
 
     return money_split;
@@ -107,7 +109,7 @@ SplitInGroupsOfThree split_in_groups_of_three(char *value)
     return split_groups;
 }
 
-char *translate_value_to_txt(const ValueClassResult *value_class)
+char *translate_left_value_to_txt(const ValueClassResult *value_class)
 {
     char *out = malloc(512);
     out[0] = '\0';
@@ -174,13 +176,56 @@ char *translate_value_to_txt(const ValueClassResult *value_class)
     return out;
 }
 
-const Milions *find_class_by_number(int class_number)
+char *translate_right_value_to_txt(MoneySplit ms)
+{
+    char *out = malloc(512);
+    out[0] = '\0';
+
+    int right_value = atoi(ms.right_value);
+
+    if (right_value > 0)
+    {
+        strcat(out, " e ");
+
+        int cent_tens = right_value / 10;
+        int cent_units = right_value % 10;
+
+        if (cent_tens == 1 && cent_units > 0)
+        {
+            strcat(out, etn[right_value - 11].n_txt);
+        }
+        else
+        {
+            if (cent_tens > 0)
+            {
+                strcat(out, tns[cent_tens - 1].n_txt);
+            }
+
+            if (cent_tens > 0 && cent_units > 0)
+            {
+                strcat(out, " e ");
+            }
+
+            if (cent_units > 0 && cent_tens != 1)
+            {
+                strcat(out, ztn[cent_units].n_txt);
+            }
+        }
+    }
+
+    strcat(out, " ");
+    strcat(out, (right_value == 1) ? "centavo" : "centavos");
+
+    return out;
+}
+
+const MonetaryClass *find_class_by_number(int class_number)
 {
     for (int j = 0; j < CLASSES_COUNT; j++)
     {
-        if (mlns[j].class_number == class_number)
+        if (mc[j].class_number == class_number)
         {
-            return &mlns[j];
+            return &mc[j];
         }
     }
     return NULL;
@@ -201,9 +246,9 @@ ValueClassResult *identify_value_class(SplitInGroupsOfThree sigot, int *count)
 
         for (int j = 0; j < CLASSES_COUNT; j++)
         {
-            if (mlns[j].class_number == m_class_pos)
+            if (mc[j].class_number == m_class_pos)
             {
-                const char *m_class = (i_groups == 1) ? mlns[j].singular : mlns[j].plural;
+                const char *m_class = (i_groups == 1) ? mc[j].singular : mc[j].plural;
 
                 results[result_index].group_index = i;
 
@@ -220,4 +265,3 @@ ValueClassResult *identify_value_class(SplitInGroupsOfThree sigot, int *count)
     *count = result_index;
     return results;
 }
-
