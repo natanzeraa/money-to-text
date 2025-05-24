@@ -3,8 +3,8 @@
 
 typedef struct
 {
-    char l_half[50];
-    char r_half[50];
+    char left_value[50];
+    char right_value[50];
 } MoneySplit;
 
 typedef struct
@@ -45,7 +45,7 @@ typedef struct
     const char *singular;
     const char *plural;
     char *out;
-} Milions;
+} MonetaryClass;
 
 typedef struct
 {
@@ -60,12 +60,13 @@ extern ZeroToNine ztn[];
 extern ElevenToNineTeen etn[];
 extern Tens tns[];
 extern Hundreds hds[];
-extern Milions mlns[];
+extern MonetaryClass mc[];
 
 MoneySplit money_splt_in_two_halfs(char *value);
 SplitInGroupsOfThree split_in_groups_of_three(char *value);
-char *translate_value_to_txt(const ValueClassResult *value_class);
-const Milions *find_class_by_number(int class_number);
+char *translate_left_value_to_txt(const ValueClassResult *value_class);
+char *translate_right_value_to_txt(MoneySplit ms);
+const MonetaryClass *find_class_by_number(int class_number);
 ValueClassResult *identify_value_class(SplitInGroupsOfThree split_groups, int *result_count);
 
 #endif // M2T_H
